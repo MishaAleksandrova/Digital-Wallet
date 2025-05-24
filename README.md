@@ -1,7 +1,7 @@
-💳 Django Digital Wallet
+## 💳 Django Digital Wallet
 This is a web-based digital wallet application built using Django and styled with Bootstrap. It allows users to register, manage their account balances, transfer funds, and track transaction history. Admin users can add funds to any user's wallet.
 
-🔍 Features
+## 🔍 Features
 User Registration & Login
 Secure authentication with email and phone number verification.
 
@@ -14,18 +14,18 @@ Users can transfer money securely to other registered users.
 Transaction History
 Each user has access to a detailed view of recent transactions:
 
-📤 Sent Transfers
+### 📤 Sent Transfers
 
-📥 Received Transfers
+### 📥 Received Transfers
 
-💸 Withdrawals
+### 💸 Withdrawals
 
-➕ Admin-added Funds
+### ➕ Admin-added Funds
 
 Role-Based Access
 Only admins can add funds; normal users can only withdraw or transfer.
 
-🛠️ Technologies Used
+## 🛠️ Technologies Used
 Backend: Django (Python)
 
 Frontend: HTML, CSS, Bootstrap 5
@@ -36,7 +36,7 @@ Authentication: Django built-in AbstractUser with email and phone fields
 
 Session Management: Django Auth System
 
-🚀 Getting Started
+## 🚀 Getting Started
 Prerequisites
 Python 3.8+
 
@@ -77,6 +77,9 @@ Start the development server
 bash
 
 python manage.py runserver
-📸 Screenshots
+
+## 📸 Screenshots
+
 Below is a preview of the dashboard interface:
-![Dashboard Screenshot] (screenshots/dashboard.png)
+
+![Dashboard Screenshot](screenshots/dashboard.png)
