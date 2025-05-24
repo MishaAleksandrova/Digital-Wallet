@@ -48,40 +48,35 @@ Installation
 Clone the repository
 
 bash
-Копиране
-Редактиране
+
 git clone https://github.com/your-username/django-digital-wallet.git
 cd django-digital-wallet
 Set up the virtual environment
 
 bash
-Копиране
-Редактиране
+
 python -m venv env
 source env/bin/activate  # On Windows: env\Scripts\activate
 Install dependencies
 
 bash
-Копиране
-Редактиране
+
 pip install -r requirements.txt
 Run migrations
 
 bash
-Копиране
-Редактиране
+
 python manage.py migrate
 Create a superuser
 
 bash
-Копиране
-Редактиране
+
 python manage.py createsuperuser
 Start the development server
 
 bash
-Копиране
-Редактиране
+
 python manage.py runserver
-📸 Screenshot
-Below is a preview of the dashboard interface:e:
+📸 Screenshots
+Below is a preview of the dashboard interface:
+![Dashboard Screenshot] (screenshots/dashboard.png)
