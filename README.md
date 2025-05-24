@@ -1,57 +1,87 @@
-💳 Django Digital Wallet App
-A secure, feature-rich digital wallet system built with Django, allowing users to manage balances, transfer funds, and view transaction histories. Admins can manage wallets, monitor activity, and add funds directly to user accounts.
+💳 Django Digital Wallet
+This is a web-based digital wallet application built using Django and styled with Bootstrap. It allows users to register, manage their account balances, transfer funds, and track transaction history. Admin users can add funds to any user's wallet.
 
-🔧 Features
-✅ User registration with email and phone verification
+🔍 Features
+User Registration & Login
+Secure authentication with email and phone number verification.
 
-✅ Secure login/logout with custom validations
+Admin Fund Management
+Admins can add funds to any user’s wallet directly from the dashboard.
 
-✅ Dashboard showing wallet balance and recent transactions
+Fund Transfers Between Users
+Users can transfer money securely to other registered users.
 
-✅ Add, withdraw, and transfer funds between users
+Transaction History
+Each user has access to a detailed view of recent transactions:
 
-✅ Admin-only controls for adding funds to any user
+📤 Sent Transfers
 
-✅ Transaction logging with types and timestamps
+📥 Received Transfers
 
-✅ Clean Bootstrap-based responsive UI
+💸 Withdrawals
 
-📦 Tech Stack
-Python 3.11
+➕ Admin-added Funds
 
-Django 4+
+Role-Based Access
+Only admins can add funds; normal users can only withdraw or transfer.
 
-Bootstrap 5
+🛠️ Technologies Used
+Backend: Django (Python)
 
-SQLite (default)
+Frontend: HTML, CSS, Bootstrap 5
 
-HTML, CSS, JavaScript
+Database: SQLite (for development)
 
-🚀 Setup Instructions
-Clone the repo
-git clone https://github.com/yourusername/django-wallet.git
+Authentication: Django built-in AbstractUser with email and phone fields
 
+Session Management: Django Auth System
+
+🚀 Getting Started
+Prerequisites
+Python 3.8+
+
+pip
+
+Virtualenv (recommended)
+
+Installation
+Clone the repository
+
+bash
+Копиране
+Редактиране
+git clone https://github.com/your-username/django-digital-wallet.git
+cd django-digital-wallet
+Set up the virtual environment
+
+bash
+Копиране
+Редактиране
+python -m venv env
+source env/bin/activate  # On Windows: env\Scripts\activate
 Install dependencies
+
+bash
+Копиране
+Редактиране
 pip install -r requirements.txt
-
 Run migrations
+
+bash
+Копиране
+Редактиране
 python manage.py migrate
-
 Create a superuser
+
+bash
+Копиране
+Редактиране
 python manage.py createsuperuser
-
 Start the development server
+
+bash
+Копиране
+Редактиране
 python manage.py runserver
-
-📸 Screenshots
-(Optional: Add screenshots of the dashboard, login screen, and admin features)
-
-🛡️ Security & Notes
-Sensitive actions like adding funds are restricted to admin users.
-
-Transactions are recorded with status, notes, and timestamps.
-
-Includes basic protections against invalid inputs.
-
-📃 License
-This project is open-source and available under the MIT License.
+📸 Screenshot
+Below is a preview of the dashboard interface:e:
