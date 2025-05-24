@@ -1,11 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Verify your email</title>
-</head>
-<body>
-    <h2>Thank you for registering!</h2>
-    <p>Please check your email and click the varification link to activate your account.</p>
-</body>
-</html>
+{% extends "wallet/base.html" %}
+
+{% block title %} Verification Failed {% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <h3>Verification Failed</h3>
+    <p class="lead">Sorry, the verification link is invalid or has expired.</p>
+    <a href="{% url 'register' %}" class="btn btn-warning mt-3">Register Again</a>
+    <a href="{% url 'login' %}" class="btn btn-primary mt-3 ms-2">Back to Login</a>
+</div>
+{% endblock %}

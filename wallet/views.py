@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -40,7 +41,7 @@ def register_view(request):
                 settings.DEFAULT_FROM_EMAIL,
                 [user.email],
             )
-            return render(request, 'verify_prompt.html')
+            return render(request, 'wallet/verify_prompt.html')
     else:
         form = RegisterForm()
     return render(request, 'wallet/register.html', {'form': form})
@@ -56,10 +57,10 @@ def verify_email_view(request):
             user.is_active = True
             user.save()
             login(request, user)
-            return redirect('wallet/dashboard')
+            return redirect('wallet_dashboard')
         except User.DoesNotExist:
-            pass
-    return render(request, 'verify_email.html')
+            return render(request, 'wallet/verify_failed.html')
+    return render(request, 'verify_failed.html')
 
 @staff_member_required
 def add_funds_view(request):

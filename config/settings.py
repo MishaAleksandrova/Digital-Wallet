@@ -1,19 +1,13 @@
 # ADMIN
-# Username: Misha
-# Email address: misha@misha.bg
-# Password: misha
+# Username: super_user1
+# Email address: super_user.com
+# Password: super_user1
 
-# User1 OK
-# Username: MishaUser
-# Email: mihaelayovcheva@abv.bg
-# Phone number: 0882725271
-# Password: EmHjZ-7ZJ4#9Kxn
-
-# User2 OK
-# Username: MishaUser5
-# Email: mihaelayovchev1@abv.bg
-# Phone number: 0882725270
-# Password: EmHjZ-7ZJ4#9Kxn
+# User1
+# Username: User1
+# Email: user1@user.com
+# Phone number: 123456789123456
+# Password: X7v#p9Lq!Zm2
 
 from pathlib import Path
 
@@ -112,7 +106,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'mihaelayovcheva@abv.bg'
 
 LOGIN_REDIRECT_URL = '/dashboard/'
-LOGOUT_REDIRECT_URL = '/login/'
+LOGOUT_REDIRECT_URL = '/'
 
 LOGIN_URL = '/login/'
-LOGOUT_REDIRECT_URL = '/login/'
+

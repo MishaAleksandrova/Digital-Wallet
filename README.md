@@ -25,6 +25,16 @@ Each user has access to a detailed view of recent transactions:
 Role-Based Access
 Only admins can add funds; normal users can only withdraw or transfer.
 
+## 📅 Future Features
+
+- [ ] Transaction filtering for users
+- [ ] Calendar visualization for transactions
+- [ ] Support for multiple currencies and current currency rates
+- [ ] Add pagination to transaction lists
+- [ ] Support multiple wallets per user
+- [ ] Upgrade admin panel with advanced user/transaction management and improved interface
+- [ ] Improve app design for better usability and aesthetics
+
 ## 🛠️ Technologies Used
 Backend: Django (Python)
 

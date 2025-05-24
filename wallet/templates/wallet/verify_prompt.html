@@ -1,11 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <h2>Check Your Email</h2>
-    <p>We`ve sent you a verification link. Please check your inbox.</p>
-</body>
-</html>
+{% extends "wallet/base.html" %}
+
+{% block title %} Verify Your Email{% endblock %}
+
+{% block content %}
+    <div class="container mt-5 text-center">
+        <h3>Check Your Email</h3>
+        <p class="lead">We`ve sent you a verification link. Please check you inbox.</p>
+        <p class="lead">Since this is a test app, you can ask the admin to verify your account.</p>
+        <a href="{% url 'login' %}" class="btn btn-primary mt-3">Back to Login</a>
+    </div>
+{% endblock %}
