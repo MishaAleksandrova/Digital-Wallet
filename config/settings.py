@@ -1,14 +1,3 @@
-# ADMIN
-# Username: super_user1
-# Email address: super_user.com
-# Password: super_user1
-
-# User1
-# Username: User1
-# Email: user1@user.com
-# Phone number: 123456789123456
-# Password: X7v#p9Lq!Zm2
-
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
