@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.views import LoginView
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -12,17 +12,48 @@ from .forms import RegisterForm, AddFundsForm, WithdrawFundsForm
 from .models import User, Wallet, Transaction
 from django.db.models import Q
 from .utils import generate_email_token, verify_email_token
+from django.utils.dateparse import parse_date
 
 
 @login_required
 def dashboard_view(request):
     wallet, _ = Wallet.objects.get_or_create(user=request.user)
-    transactions = Transaction.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).distinct().order_by('-timestamp')[:10]
 
-    return render(request, 'wallet/dashboard.html', {
+    if request.user.is_superuser:
+        transactions = Transaction.objects.all()
+    else:
+        base_filter = Q(sender=request.user) | Q(receiver=request.user)
+        add_funds_filter = Q(transaction_type='ADD', receiver=request.user)
+        transactions = Transaction.objects.filter(base_filter | add_funds_filter).distinct()
+
+    selected_type = request.GET.get('type', '')
+    start_date = request.GET.get('start_date', '')
+    end_date = request.GET.get('end_date', '')
+
+    if selected_type:
+        transactions = transactions.filter(transaction_type=selected_type)
+
+    if start_date:
+        start = parse_date(start_date)
+        if start:
+            transactions = transactions.filter(timestamp__date__gte=start)
+
+    if end_date:
+        end = parse_date(end_date)
+        if end:
+            transactions = transactions.filter(timestamp__date__lte=end)
+
+    transactions = transactions.order_by('-timestamp')[:10]
+
+    context = {
         'wallet': wallet,
         'transactions': transactions,
-    })
+        'selected_type': selected_type,
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+
+    return render(request, 'wallet/dashboard.html', context)
 
 def register_view(request):
     if request.method == 'POST':
@@ -63,6 +94,7 @@ def verify_email_view(request):
     return render(request, 'verify_failed.html')
 
 @staff_member_required
+
 def add_funds_view(request):
     if request.method == 'POST':
         form = AddFundsForm(request.POST)

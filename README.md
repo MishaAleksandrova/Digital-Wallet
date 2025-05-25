@@ -25,9 +25,10 @@ Each user has access to a detailed view of recent transactions:
 Role-Based Access
 Only admins can add funds; normal users can only withdraw or transfer.
 
+### 🔽 Transaction filtering for users
+
 ## 📅 Future Features
 
-- [ ] Transaction filtering for users
 - [ ] Calendar visualization for transactions
 - [ ] Support for multiple currencies and current currency rates
 - [ ] Add pagination to transaction lists
