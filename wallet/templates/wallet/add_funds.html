@@ -5,7 +5,53 @@
     <h2>Add Funds</h2>
     <form method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Add</button>
+        <div class="mb-3">
+            {{ form.user.label_tag }}
+            {{ form.user }}
+        </div>
+        <div class="mb-3">
+            {{ form.wallet.label_tag }}
+            <select name="{{ form.wallet.name }}" id="id_wallet" class="form-select">
+                <option value="">Select a wallet</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            {{ form.amount.label_tag }}
+            {{ form.amount }}
+        </div>
+        <div class="mb-3">
+            {{ form.note.label_tag }}
+            {{ form.note }}
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
     </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userSelect=document.getElementById('id_user');
+            const walletSelect = document.getElementById('id_wallet');
+
+            userSelect.addEventListener('change', function() {
+                const userId = this.value;
+
+                if (!userId) return;
+
+                fetch(`/ajax/get-wallets/?user_id=${userId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        walletSelect.innerHTML = '';
+                        if (data.wallets.length == 0){
+                            walletSelect.innerHTML = '<option value="">No wallets found</option>';
+                        } else {
+                            walletSelect.innerHTML = '<option value="">Select a wallet</option>';
+                            data.wallets.forEach(wallet => {
+                                const option = document.createElement('option');
+                                option.value = wallet.id;
+                                option.textContent = wallet.label;
+                                walletSelect.appendChild(option);
+                            });
+                        }
+                    });
+                });
+            });
+    </script>
 {% endblock %}

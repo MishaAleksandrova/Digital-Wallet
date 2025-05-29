@@ -70,6 +70,11 @@ class AddFundsForm(forms.Form):
         queryset=User.objects.all(),
         label="Select User"
     )
+    wallet = forms.ModelChoiceField(
+        queryset=Wallet.objects.none(),
+        label="Select Wallet",
+        required=True,
+    )
     amount = forms.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -79,6 +84,15 @@ class AddFundsForm(forms.Form):
         widget=forms.Textarea,
         required=False,
     )
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user_selected', None)
+        super().__init__(*args, **kwargs)
+
+        if user:
+            self.fields['wallet'].queryset = Wallet.objects.filter(user=user)
+        else:
+            self.fields['wallet'].queryset = Wallet.objects.none()
 
 class WithdrawFundsForm(forms.Form):
     amount = forms.DecimalField(

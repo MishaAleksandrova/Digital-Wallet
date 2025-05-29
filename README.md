@@ -1,53 +1,86 @@
 ## 💳 Django Digital Wallet
-This is a web-based digital wallet application built using Django and styled with Bootstrap. It allows users to register, manage their account balances, transfer funds, and track transaction history. Admin users can add funds to any user's wallet.
+A web-based digital wallet application built with Django and styled using Bootstrap. It allows users to register, manage multiple wallets in different currencies, transfer funds, and view detailed transaction histories. Admins can manage user funds and wallets through a secure interface.
 
 ## 🔍 Features
-User Registration & Login
-Secure authentication with email and phone number verification.
+✅ User Registration & Login
+• Secure authentication
 
-Admin Fund Management
-Admins can add funds to any user’s wallet directly from the dashboard.
+• Email verification flow
 
-Fund Transfers Between Users
-Users can transfer money securely to other registered users.
+• Unique username and email required
 
-Withdraw Funds
-Users can withdraw funds from their wallets.
+✅ Admin Fund Management
+• Admins can dynamically select a user and fund their wallets
 
-Transaction History
-Each user has access to a detailed view of recent transactions:
+• AJAX-powered dropdown shows only that user’s wallets
 
-📤 Sent Transfers
-📥 Received Transfers
-💸 Withdrawals
-➕ Admin-added Funds
+✅ Multiple Wallets per User
+• Users can add wallets in different currencies
 
-Role-Based Access
-Only admins can add funds; normal users can only withdraw or transfer.
+• Admin can view and manage each wallet
 
-🔽 Transaction filtering for users
+✅ Fund Transfers Between Users
+• Users can securely transfer funds to others
 
-📝 Editable Profile
-Users can update their email and phone number with placeholders showing their current values.
+• Prevents self-transfers and validates balance
+
+✅ Withdraw Funds
+• Users can withdraw from any of their wallets
+
+• Proper balance checks in place
+
+✅ Transaction History
+• Filterable by wallet, type, and date
+
+• Most recent 10 transactions shown
+
+• Icons and labels for clarity
+
+Types:
+
+• 📤 Sent Transfers
+
+• 📥 Received Transfers
+
+• 💸 Withdrawals
+
+• ➕ Admin-added Funds
+
+✅ Role-Based Access
+• Only staff/admins can add funds
+
+• Normal users can only withdraw or transfer
+
+✅ Wallet Selection & Filtering
+• Dashboard wallet dropdown to focus on one wallet
+
+• AJAX updates the wallet dropdown when admin selects a user
+
+• Filter recent transactions by wallet and type
+
+✅ Editable Profile
+• Update email and phone with current values shown
+
+• Clean design with validations
 
 
 
 ## 📅 Future Features
 
-- [ ] Multiple Wallets & Currency Conversion
-- [ ] Upgrade admin panel with advanced user/transaction management and improved interface
+- [ ] Currency Conversion & Exchange Rate Integration
+- [ ] Admin Panel Improvements (bulk actions, analytics)
 - [ ] Improve app design for better usability and aesthetics
 
 ## 🛠️ Technologies Used
-Backend: Django (Python)
+• Backend: Django (Python)
 
-Frontend: HTML, CSS, Bootstrap 5
+• Frontend: HTML, CSS, Bootstrap 5
 
-Database: SQLite (for development)
+• Database: PostgreSQL
 
-Authentication: Django built-in AbstractUser with email and phone fields
+• Authentication: Django built-in AbstractUser with email and phone fields
 
-Session Management: Django Auth System
+• AJAX: JavaScript + Django JsonResponse for dynamic UI
 
 ## 🚀 Getting Started
 Prerequisites
@@ -96,3 +129,7 @@ python manage.py runserver
 Below is a preview of the dashboard interface:
 
 ![Dashboard Screenshot](screenshots/dashboard.png)
+
+
+
+

@@ -16,7 +16,7 @@
 <form method="post" class="mb-4">
   {% csrf_token %}
   <h5>Add Wallet</h5>
-  {{ wallet_form.ap_p }}
+  {{ wallet_form.as_p }}
   <button type="submit" name="add_wallet" class="btn btn-success">Add Wallet</button>
 </form>
 

@@ -14,4 +14,5 @@ urlpatterns = [
     path('withdraw/', views.withdraw_funds_view, name='withdraw_funds'),
     path('transfer/', views.transfer_funds_view, name='transfer_funds'),
     path('account/', views.account_view, name='account_settings'),
+    path('ajax/get-wallets/', views.get_wallets, name='get_wallets'),
 ]

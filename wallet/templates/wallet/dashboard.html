@@ -3,9 +3,20 @@
 
 {% block content %}
 <h1 class="mb-4">Welcome back, {{ user.first_name|default:user.username }}!</h1>
-
+<form method="get" class="mb-3">
+    <label for="wallet">Select Wallet:</label>
+    <select name="wallet" id="wallet" class="form-select" onchange="this.form.submit()">
+      {% for w in wallets %}
+        <option value="{{ w.id }}"
+                {% if w.id == wallet.id %}
+                  selected
+                {% endif %}>
+                {{ w.currency.code }} - {{ w.balance }}
+        </option>
+      {% endfor %}
+    </select>
+  </form>
 <div class="row gy-4">
-
   <!-- Wallet Balance Card -->
   <div class="col-md-4">
     <div class="card shadow-sm border-0">
@@ -49,6 +60,17 @@
 
         <form method="get" class="mb-3">
           <div class="row g-2 align-items-center">
+            <div class="col-12">
+              <label for="filter_wallet" class="form-label">Filter by Wallet</label>
+              <select name="wallet" id="filter_wallet" class="form-select">
+  <option value="">All Wallets</option>
+  {% for w in wallets %}
+    <option value="{{ w.id }}" {% if w.id == wallet.id %}selected{% endif %}>
+      {{ w.currency.code }} - {{ w.balance }}
+    </option>
+  {% endfor %}
+</select>
+            </div>
             <div class="col-5">
               <select name="type" class="form-select" aria-label="Transaction type filter">
                 <option value="" {% if not selected_type %}selected{% endif %}>All types</option>
@@ -74,28 +96,28 @@
 
 
         {% if transactions %}
-        <ul class="list-group list-group-flush">
-          {% for tx in transactions %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-              <strong>{{ tx.get_transaction_type_display }}</strong><br />
-              {% if tx.transaction_type == 'ADD' and tx.receiver %}
-                To: {{ tx.receiver.username }}
-              {% elif tx.sender == user and tx.receiver %}
-                To: {{ tx.receiver.username }}
-              {% elif tx.receiver == user and tx.sender %}
-                From: {{ tx.sender.username }}
-              {% elif tx.transaction_type == 'WITHDRAW' %}
-
-              {% else %}
-                ---
-              {% endif %}
-              <div class="text-muted small">{{ tx.timestamp|date:"M d, Y H:i" }}</div>
-            </div>
-            <span class="badge bg-primary rounded-pill">${{ tx.amount }}</span>
-          </li>
-          {% endfor %}
-        </ul>
+          <ul class="list-group list-group-flush">
+            {% for tx in transactions %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ tx.get_transaction_type_display }}</strong><br />
+                {% if tx.transaction_type == 'ADD' and tx.receiver %}
+                  To: {{ tx.receiver.username }}
+                {% elif tx.sender == user and tx.receiver %}
+                  To: {{ tx.receiver.username }}
+                {% elif tx.receiver == user and tx.sender %}
+                  From: {{ tx.sender.username }}
+                {% elif tx.transaction_type == 'WITHDRAW' %}
+                  Withdraw
+                {% else %}
+                  ---
+                {% endif %}
+                <div class="text-muted small">{{ tx.timestamp|date:"M d, Y H:i" }}</div>
+              </div>
+              <span class="badge bg-primary rounded-pill">${{ tx.amount }}</span>
+            </li>
+            {% endfor %}
+          </ul>
         {% else %}
           <p class="text-muted">No transactions found.</p>
         {% endif %}

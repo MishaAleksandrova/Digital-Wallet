@@ -2,11 +2,14 @@ from decimal import Decimal
 import requests
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.conf import settings
+from django.views.decorators.http import require_GET
+
 from .forms import RegisterForm, AddFundsForm, WithdrawFundsForm, AddWalletForm, EditProfileForm
 from .models import User, Wallet, Transaction
 from django.db.models import Q
@@ -16,14 +19,29 @@ from django.utils.dateparse import parse_date
 
 @login_required
 def dashboard_view(request):
-    wallet, _ = Wallet.objects.get_or_create(user=request.user)
+    wallets = Wallet.objects.filter(user=request.user)
+    selected_wallet_id = request.GET.get('wallet')
+
+    wallet = None
+    if selected_wallet_id:
+        wallet = wallets.filter(id=selected_wallet_id).first()
+    else:
+        wallet = wallets.first()
 
     if request.user.is_superuser:
         transactions = Transaction.objects.all()
+        if wallet:
+            transactions = transactions.filter(
+                Q(sender__wallet__id=wallet.id) |
+                Q(receiver__wallet__id=wallet.id)
+            )
     else:
         base_filter = Q(sender=request.user) | Q(receiver=request.user)
-        add_funds_filter = Q(transaction_type='ADD', receiver=request.user)
-        transactions = Transaction.objects.filter(base_filter | add_funds_filter).distinct()
+        transactions = Transaction.objects.filter(base_filter)
+
+        if wallet:
+            wallet_user_filter = Q(sender=wallet.user) | Q(receiver=wallet.user)
+            transactions = transactions.filter(wallet_user_filter)
 
     selected_type = request.GET.get('type', '')
     start_date = request.GET.get('start_date', '')
@@ -45,18 +63,19 @@ def dashboard_view(request):
     transactions = transactions.order_by('-timestamp')[:10]
 
     #Get wallet currency and calculate exchange to EUR for display
-    convert_balance = None
-    target_currency_code = 'EUR'
-
-    if wallet.currency and wallet.currency.code != target_currency_code:
-        exchange_rate = get_exchange_rate(wallet.currency.code, target_currency_code)
-        if exchange_rate:
-            convert_balance = wallet.balance * Decimal(str(exchange_rate))
+    # convert_balance = None
+    # target_currency_code = 'EUR'
+    #
+    # if wallet and wallet.currency.code != target_currency_code:
+    #     exchange_rate = get_exchange_rate(wallet.currency.code, target_currency_code)
+    #     if exchange_rate:
+    #         convert_balance = wallet.balance * Decimal(str(exchange_rate))
 
     context = {
         'wallet': wallet,
-        'converted_balance': convert_balance,
-        'target_currency_code': target_currency_code,
+        'wallets': wallets,
+        # 'converted_balance': convert_balance,
+        # 'target_currency_code': target_currency_code,
         'transactions': transactions,
         'selected_type': selected_type,
         'start_date': start_date,
@@ -106,30 +125,53 @@ def verify_email_view(request):
             return render(request, 'wallet/verify_failed.html')
     return render(request, 'verify_failed.html')
 
-@staff_member_required
 
+@require_GET
+@staff_member_required
+def get_wallets(request):
+    user_id = request.GET.get('user_id')
+    wallets = []
+
+    if user_id:
+        user = get_object_or_404(User, id=user_id)
+        wallets_qs = Wallet.objects.filter(user=user)
+        wallets = [{
+            'id': w.id,
+            'label': f"{w.currency.code} = {w.balance}"
+        }
+            for w in wallets_qs
+        ]
+    return JsonResponse({'wallets': wallets})
+
+
+@staff_member_required
 def add_funds_view(request):
+    selected_user_id = request.GET.get('user')
+    user_selected = None
+
+    if selected_user_id:
+        user_selected = get_object_or_404(User, id=selected_user_id)
+
     if request.method == 'POST':
-        form = AddFundsForm(request.POST)
+        form = AddFundsForm(request.POST, user_selected=request.POST.get('user'))
         if form.is_valid():
-            user = form.cleaned_data['user']
+            wallet = form.cleaned_data['wallet']
             amount = form.cleaned_data['amount']
             note = form.cleaned_data['note']
 
-            wallet,_ = Wallet.objects.get_or_create(user=user)
             wallet.deposit(amount)
 
             Transaction.objects.create(
                 sender=None,
-                receiver=user,
+                receiver=wallet.user,
                 amount=amount,
                 transaction_type='ADD',
                 note= note or f"Funds added by admin {request.user.username}"
             )
-            messages.success(request, f"{amount} added to {user.username}`s wallet.")
+            messages.success(request, f"{amount} added to {wallet.user.username}`s wallet.")
             return redirect('wallet_dashboard')
     else:
-        form = AddFundsForm()
+        form = AddFundsForm(user_selected=user_selected )
     return render(request, 'wallet/add_funds.html', {'form': form})
 
 @login_required
