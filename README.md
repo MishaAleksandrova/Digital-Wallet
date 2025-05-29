@@ -11,28 +11,30 @@ Admins can add funds to any user’s wallet directly from the dashboard.
 Fund Transfers Between Users
 Users can transfer money securely to other registered users.
 
+Withdraw Funds
+Users can withdraw funds from their wallets.
+
 Transaction History
 Each user has access to a detailed view of recent transactions:
 
-### 📤 Sent Transfers
-
-### 📥 Received Transfers
-
-### 💸 Withdrawals
-
-### ➕ Admin-added Funds
+📤 Sent Transfers
+📥 Received Transfers
+💸 Withdrawals
+➕ Admin-added Funds
 
 Role-Based Access
 Only admins can add funds; normal users can only withdraw or transfer.
 
-### 🔽 Transaction filtering for users
+🔽 Transaction filtering for users
+
+📝 Editable Profile
+Users can update their email and phone number with placeholders showing their current values.
+
+
 
 ## 📅 Future Features
 
-- [ ] Calendar visualization for transactions
-- [ ] Support for multiple currencies and current currency rates
-- [ ] Add pagination to transaction lists
-- [ ] Support multiple wallets per user
+- [ ] Multiple Wallets & Currency Conversion
 - [ ] Upgrade admin panel with advanced user/transaction management and improved interface
 - [ ] Improve app design for better usability and aesthetics
 

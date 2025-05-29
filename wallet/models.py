@@ -1,11 +1,30 @@
 import uuid
 from decimal import Decimal
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
 
-from config import settings
+class Currency(models.Model):
+    code = models.CharField(
+        max_length=10,
+        unique=True,
+    )
+    name = models.CharField(
+        max_length=100,
+    )
+    symbol = models.CharField(
+        max_length=5,
+        default='$',
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Currency'
+        verbose_name_plural = 'Currencies'
 
 class User(AbstractUser):
     email_verified = models.BooleanField(
@@ -19,20 +38,30 @@ class User(AbstractUser):
         default=False,
     )
 
+    def __str__(self):
+        return self.username
+
 
 class Wallet(models.Model):
-    user = models.OneToOneField(
+    user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        related_name='wallets',
     )
     balance = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         default=Decimal('0.00'),
     )
+    currency = models.ForeignKey(
+        Currency,
+        on_delete=models.CASCADE,
+        null=False,
+        blank=False,
+    )
 
     def __str__(self):
-        return f"{self.user.username}'s Wallet: ${self.balance}"
+        return f"{self.user.username}'s {self.currency.code} Wallet: ${self.balance}"
 
     def deposit(self, amount):
         self.balance += Decimal(amount)

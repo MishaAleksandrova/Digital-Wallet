@@ -11,7 +11,13 @@
     <div class="card shadow-sm border-0">
       <div class="card-body text-center">
         <h5 class="card-title text-muted">Wallet Balance</h5>
-        <h2 class="display-4 fw-bold">${{ wallet.balance }}</h2>
+        <h2 class="display-4 fw-bold">{{ wallet.balance }} {{ wallet.currency.code|default:"USD" }}</h2>
+          {% if converted_balance %}
+            <p class="text-muted small">
+              ≈ {{ converted_balance|floatformat:2 }} {{ target_currency_code }}
+            </p>
+          {% endif %}
+
           {% if user.is_staff %}
             <a href="{% url 'add_funds' %}" class="btn btn-primary mt-3 w-100">Add Funds</a>
           {% endif %}

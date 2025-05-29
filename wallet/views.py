@@ -1,17 +1,16 @@
 from decimal import Decimal
-
+import requests
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
-from django.core.paginator import Paginator
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.conf import settings
-from .forms import RegisterForm, AddFundsForm, WithdrawFundsForm
+from .forms import RegisterForm, AddFundsForm, WithdrawFundsForm, AddWalletForm, EditProfileForm
 from .models import User, Wallet, Transaction
 from django.db.models import Q
-from .utils import generate_email_token, verify_email_token
+from .utils import generate_email_token, verify_email_token, get_exchange_rate
 from django.utils.dateparse import parse_date
 
 
@@ -45,8 +44,19 @@ def dashboard_view(request):
 
     transactions = transactions.order_by('-timestamp')[:10]
 
+    #Get wallet currency and calculate exchange to EUR for display
+    convert_balance = None
+    target_currency_code = 'EUR'
+
+    if wallet.currency and wallet.currency.code != target_currency_code:
+        exchange_rate = get_exchange_rate(wallet.currency.code, target_currency_code)
+        if exchange_rate:
+            convert_balance = wallet.balance * Decimal(str(exchange_rate))
+
     context = {
         'wallet': wallet,
+        'converted_balance': convert_balance,
+        'target_currency_code': target_currency_code,
         'transactions': transactions,
         'selected_type': selected_type,
         'start_date': start_date,
@@ -62,6 +72,9 @@ def register_view(request):
             user = form.save(commit=False)
             user.is_active = False
             user.save()
+
+            currency = form.cleaned_data['currency']
+            Wallet.objects.create(user=user, currency=currency)
 
             token = generate_email_token(user.email)
             verify_link = request.build_absolute_uri(f"/verify-email/?token={token}")
@@ -193,3 +206,54 @@ def transfer_funds_view(request):
         return redirect('wallet_dashboard')
 
     return render(request, 'wallet/transfer_funds.html')
+
+
+@login_required
+def account_view(request):
+    user = request.user
+    wallets = Wallet.objects.filter(user=user)
+
+    if request.method == 'POST':
+        wallet_form = AddWalletForm(request.POST)
+        profile_form = EditProfileForm(
+            request.POST or None,
+            instance=request.user,
+        )
+
+        if 'add_wallet' in request.POST:
+            wallet_form = AddWalletForm(request.POST)
+            if wallet_form.is_valid():
+                currency = wallet_form.cleaned_data['currency']
+                if not wallets.filter(currency=currency).exists():
+                    Wallet.objects.create(user=user, currency=currency)
+                    messages.success(request, f"Wallet in {currency.code} added.")
+                else:
+                    messages.error(request, f"Wallet in {currency.code} already exists.")
+                return redirect('account_settings')
+
+        elif 'edit_profile' in request.POST:
+            profile_form = EditProfileForm(request.POST, instance=user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, f"Profile updated.")
+                return redirect('account_settings')
+
+        elif 'delete_wallet' in request.POST:
+            wallet_id = request.POST.get('wallet_id')
+            wallet = get_object_or_404(Wallet, id=wallet_id, user=user)
+            if wallet.balance == 0:
+                wallet.delete()
+                messages.success(request, f"{wallet.currency.code} wallet deleted.")
+            else:
+                messages.error(request, "You can only delete empty wallets.")
+            return redirect('account_settings')
+    else:
+        wallet_form = AddWalletForm()
+        profile_form = EditProfileForm(instance=user)
+
+    context = {
+        'wallet_form': wallet_form,
+        'profile_form': profile_form,
+        'wallets': wallets,
+    }
+    return render(request, 'wallet/account.html', context)
