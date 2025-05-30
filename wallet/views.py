@@ -10,7 +10,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.views.decorators.http import require_GET
 
-from .forms import RegisterForm, AddFundsForm, WithdrawFundsForm, AddWalletForm, EditProfileForm
+from .forms import RegisterForm, AddFundsForm, WithdrawFundsForm, AddWalletForm, EditProfileForm, TransferFundsForm
 from .models import User, Wallet, Transaction
 from django.db.models import Q
 from .utils import generate_email_token, verify_email_token, get_exchange_rate
@@ -32,8 +32,8 @@ def dashboard_view(request):
         transactions = Transaction.objects.all()
         if wallet:
             transactions = transactions.filter(
-                Q(sender__wallet__id=wallet.id) |
-                Q(receiver__wallet__id=wallet.id)
+                Q(sender=wallet.user) |
+                Q(receiver=wallet.user)
             )
     else:
         base_filter = Q(sender=request.user) | Q(receiver=request.user)
@@ -62,20 +62,9 @@ def dashboard_view(request):
 
     transactions = transactions.order_by('-timestamp')[:10]
 
-    #Get wallet currency and calculate exchange to EUR for display
-    # convert_balance = None
-    # target_currency_code = 'EUR'
-    #
-    # if wallet and wallet.currency.code != target_currency_code:
-    #     exchange_rate = get_exchange_rate(wallet.currency.code, target_currency_code)
-    #     if exchange_rate:
-    #         convert_balance = wallet.balance * Decimal(str(exchange_rate))
-
     context = {
         'wallet': wallet,
         'wallets': wallets,
-        # 'converted_balance': convert_balance,
-        # 'target_currency_code': target_currency_code,
         'transactions': transactions,
         'selected_type': selected_type,
         'start_date': start_date,
@@ -176,9 +165,10 @@ def add_funds_view(request):
 
 @login_required
 def withdraw_funds_view(request):
-    form = WithdrawFundsForm(request.POST or None)
-    if form.is_valid():
-        wallet = request.user.wallet
+    form = WithdrawFundsForm(request.POST or None, user=request.user)
+
+    if request.method == 'POST' and form.is_valid():
+        wallet = form.cleaned_data['wallet']
         amount = form.cleaned_data['amount']
 
         if wallet.balance >= amount:
@@ -191,63 +181,105 @@ def withdraw_funds_view(request):
                 amount=amount,
                 transaction_type='WITHDRAW',
             )
-            messages.success(request, f"{amount} withdrawn successfully.")
+            messages.success(request, f"{amount} withdrawn successfully from {wallet.currency.code} wallet.")
             return redirect('wallet_dashboard')
         else:
             messages.error(request, "Insufficient funds.")
-    return render(request, 'wallet/withdraw.html', {'form': form})
+    selected_wallet_id = request.POST.get('wallet') if request.method == 'POST' else None
+    wallet_choices = [
+        {
+            'id': str(wallet.id),
+            'label': f"{wallet.currency.code} - {wallet.balance}",
+            'selected': str(wallet.id) == selected_wallet_id,
+        }
+        for wallet in form.fields['wallet'].queryset
+    ]
+    return render(request, 'wallet/withdraw.html', {'form': form, 'wallet_choices': wallet_choices})
+
+
+@require_GET
+def get_recipient_wallets(request):
+    username = request.GET.get('username')
+    data = {'wallets': []}
+
+    try:
+        recipient = User.objects.get(username__iexact=username)
+        wallets = Wallet.objects.filter(user=recipient)
+
+        data['wallets'] = [
+            {
+                'id': wallet.id,
+                'currency': wallet.currency.code,
+                'balance': str(wallet.balance),
+            }
+            for wallet in wallets
+        ]
+    except User.DoesNotExist:
+        data['error'] = 'User not found'
+
+    return JsonResponse(data)
+
 
 @login_required
 def transfer_funds_view(request):
     if request.method == 'POST':
-        recipient_username = request.POST.get('recipient')
-        amount = request.POST.get('amount')
-        note = request.POST.get('note', '')
-
-        if not recipient_username or not amount:
-            messages.error(request, "Recipient and amount are required.")
-            return redirect('transfer_funds')
-
+        post_data = request.POST.copy()
+        username = post_data.get('recipient')
         try:
-            recipient = User.objects.get(username=recipient_username)
+            recipient = User.objects.get(username=username)
+            post_data['recipient'] = recipient.id
         except User.DoesNotExist:
-            messages.error(request, "Recipient user not found.")
-            return redirect('transfer_funds')
+            messages.error(request, "Recipient not found.")
+            form = TransferFundsForm(post_data, user=request.user)
+            return render(request, 'wallet/transfer_funds.html', {'form': form})
 
-        if recipient == request.user:
-            messages.error(request, "You cannot transfer to yourself.")
-            return redirect('transfer_funds')
+        form = TransferFundsForm(post_data, user=request.user)
+        if form.is_valid():
+            sender_wallet = form.cleaned_data['sender_wallet']
+            recipient = form.cleaned_data['recipient']
+            recipient_wallet = form.cleaned_data['recipient_wallet']
+            amount = form.cleaned_data['amount']
+            note = form.cleaned_data['note']
 
-        try:
-            amount = Decimal(amount)
-        except:
-            messages.error(request, "Invalid amount.")
-            return redirect('transfer_funds')
+            if sender_wallet.user != request.user:
+                messages.error(request, "Invalid sender wallet.")
+                return redirect('transfer_funds')
 
-        sender_wallet = Wallet.objects.get(user=request.user)
-        recipient_wallet = Wallet.objects.get(user=recipient)
+            if sender_wallet.balance < amount:
+                messages.error(request, "Insufficient funds.")
+                return redirect('transfer_funds')
 
-        if sender_wallet.balance < amount:
-            messages.error(request, "Insufficient funds.")
-            return redirect('transfer_funds')
+            if sender_wallet.currency == recipient_wallet.currency:
+                converted_amount = amount
+            else:
+                rate = get_exchange_rate(sender_wallet.currency.code, recipient_wallet.currency.code)
+                if not rate:
+                    messages.error(request, "Currency conversion failed.")
+                    return redirect('transfer_funds')
+                converted_amount = amount * Decimal(str(rate))
 
-        sender_wallet.balance -= amount
-        recipient_wallet.balance += amount
-        sender_wallet.save()
-        recipient_wallet.save()
+            sender_wallet.balance -= amount
+            sender_wallet.save()
 
-        Transaction.objects.create(
-            sender=request.user,
-            receiver=recipient,
-            amount=amount,
-            transaction_type='TRANSFER',
-            note=note,
-        )
+            recipient_wallet.balance += converted_amount
+            recipient_wallet.save()
 
-        messages.success(request, f"Transferred ${amount} to {recipient.username}.")
-        return redirect('wallet_dashboard')
+            Transaction.objects.create(
+                sender=request.user,
+                receiver=recipient,
+                amount=amount,
+                transaction_type='TRANSFER',
+                note=f"{note} | Converted to {converted_amount:.2f} {recipient_wallet.currency.code}" if sender_wallet.currency != recipient_wallet.currency else note,
+            )
 
-    return render(request, 'wallet/transfer_funds.html')
+            messages.success(request, f"Transferred {amount:.2f} {sender_wallet.currency.code} to {recipient.username}."
+                             f"({converted_amount:.2f} {recipient_wallet.currency.code})."
+                             )
+            return redirect('wallet_dashboard')
+    else:
+        form = TransferFundsForm(user=request.user)
+
+    return render(request, 'wallet/transfer_funds.html', {'form': form})
 
 
 @login_required

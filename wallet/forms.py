@@ -95,15 +95,41 @@ class AddFundsForm(forms.Form):
             self.fields['wallet'].queryset = Wallet.objects.none()
 
 class WithdrawFundsForm(forms.Form):
+    wallet = forms.ModelChoiceField(
+        queryset=Wallet.objects.none(),
+        label="Select Wallet",
+        required=True,
+    )
     amount = forms.DecimalField(
         max_digits=12,
         decimal_places=2,
         min_value=Decimal('0.01'),
     )
 
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['wallet'].queryset = Wallet.objects.filter(user=user)
+            self.fields['wallet'].label_form_istance = self.wallet_label_from_instance
+
+    def wallet_label_from_instance(self, obj):
+        return f"{obj.currency.code} - {obj.balance}"
+
+
 class TransferFundsForm(forms.Form):
+    sender_wallet = forms.ModelChoiceField(
+        queryset=Wallet.objects.none(),
+        label="From Your Wallet",
+
+    )
     recipient = forms.ModelChoiceField(
-        queryset=User.objects.all(),
+        queryset=User.objects.none(),
+        label="Recipient",
+    )
+    recipient_wallet = forms.ModelChoiceField(
+        queryset=Wallet.objects.none(),
+        label="Recipient Wallet",
     )
     amount = forms.DecimalField(
         max_digits=12,
@@ -114,6 +140,20 @@ class TransferFundsForm(forms.Form):
         required=False,
         widget=forms.Textarea,
     )
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['sender_wallet'].queryset = Wallet.objects.filter(user=user)
+            self.fields['recipient'].queryset = User.objects.exclude(id=user.id)
+
+        if 'recipient' in self.data:
+            try:
+                recipient_id = int(self.data.get('recipient'))
+                self.fields['recipient_wallet'].queryset = Wallet.objects.filter(user_id=recipient_id)
+            except (ValueError, TypeError):
+                pass
 
 
 

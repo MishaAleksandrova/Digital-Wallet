@@ -108,7 +108,7 @@
                 {% elif tx.receiver == user and tx.sender %}
                   From: {{ tx.sender.username }}
                 {% elif tx.transaction_type == 'WITHDRAW' %}
-                  Withdraw
+
                 {% else %}
                   ---
                 {% endif %}

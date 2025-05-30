@@ -5,7 +5,17 @@
     <h2>Withdraw Funds</h2>
     <form method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
+        <p>
+            <label for="{{ form.wallet.id_for_label }}">Select Wallet:</label>
+            <select name="{{ form.wallet.name }}" id="{{ form.wallet.id_for_label }}">
+                {% for wallet in wallet_choices %}
+                    <option value="{{ wallet.id }}"{% if wallet.selected %}selected{% endif %}>
+                        {{ wallet.label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>{{ form.amount.label_tag }} {{ form.amount }}</p>
         <button type="submit">Withdraw</button>
     </form>
 {% endblock %}

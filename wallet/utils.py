@@ -1,5 +1,6 @@
 from django.core.signing import TimestampSigner, SignatureExpired, BadSignature
 import requests
+from django.conf import settings
 
 signer = TimestampSigner()
 
@@ -14,16 +15,14 @@ def verify_email_token(token, max_age=86400):
         return None
 
 def get_exchange_rate(from_currency, to_currency):
-    url = f"https://api.freecurrencyapi.com/v1/latest"
-    params = {
-        "apikey": "fca_live_RCxS9tzbd6gPI1EK5K1YsJn9ANZgSwVzZLVfkaVZ",
-        "base_currency": from_currency,
-    }
-    responses = requests.get(url, params=params)
-    data = responses.json()
+    api_key = settings.FREE_CURRENCY_API_KEY
+    url = f"https://api.freecurrencyapi.com/v1/latest?apikey={api_key}&base_currency={from_currency}&currencies={to_currency}"
 
-    if 'data' in data:
-        rates = data['data']
-        if to_currency in rates:
-            return rates[to_currency]
-    return None
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        return data['data'][to_currency]
+    except Exception as ex:
+        print("Exchange rate fetch error", ex)
+        return None
