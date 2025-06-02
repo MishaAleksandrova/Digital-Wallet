@@ -2,48 +2,52 @@
 {% block title %}Account Settings{% endblock %}
 
 {% block content %}
-<h2>Account Settings</h2>
 
-<form method="post" class="mb-4">
-  {% csrf_token %}
-  <h5>Edit Profile</h5>
-  {{ profile_form.as_p }}
-  <button type="submit" name="edit_profile" class="btn btn-primary">Update Profile</button>
-</form>
-
-<hr>
-
-<form method="post" class="mb-4">
-  {% csrf_token %}
-  <h5>Add Wallet</h5>
-  {{ wallet_form.as_p }}
-  <button type="submit" name="add_wallet" class="btn btn-success">Add Wallet</button>
-</form>
-
-<hr>
-
-<h5>Your Wallets</h5>
-<ul class="list-group">
-  {% for wallet in wallets %}
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <div>
-        <i class="bi bi-circle-fill text-secondary me-2"></i>
-        <strong>{{ wallet.currency.code }}</strong>: {{ wallet.balance }}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm mt-4">
+      <div class="card-header bg-custom-primary text-white">
+        <h5>Account Settings</h5>
       </div>
-      {% if wallet.balance == 0 %}
-      <form method="post" class="d-inline">
-        {% csrf_token %}
-        <input type="hidden" name="wallet_id" value="{{ wallet.id }}">
-        <button type="submit" name="delete_wallet" class="btn btn-danger btn-sm">Delete</button>
-      </form>
-      {% else %}
-      <span class="text-muted small">Wallet must be empty to delete</span>
-<!--      ADD OPTION EMPTY WALLET-->
-      {% endif %}
-    </li>
-  {% empty %}
-    <li class="list-group-item">You have no wallets.</li>
-<!--  ADD OPPTION ADD WALLET-->
-  {% endfor %}
-</ul>
+      <div class="card-body">
+        <form method="post" class="mb-4">
+          {% csrf_token %}
+          <h5>Edit Profile</h5>
+          {{ profile_form.as_p }}
+          <button type="submit" name="edit_profile" class="btn-outline-custom-primary">Update Profile</button>
+        </form>
+        <hr>
+        <form method="post" class="mb-4">
+          {% csrf_token %}
+          <h5>Add Wallet</h5>
+          {{ wallet_form.as_p }}
+          <button type="submit" name="add_wallet" class="btn-outline-custom-success">Add Wallet</button>
+        </form>
+        <hr>
+        <h5>Your Wallets</h5>
+        <ul class="list-group">
+          {% for wallet in wallets %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <i class="bi bi-circle-fill text-secondary me-2"></i>
+                <strong>{{ wallet.currency.code }}</strong>: {{ wallet.balance }}
+              </div>
+              {% if wallet.balance == 0 %}
+              <form method="post" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="wallet_id" value="{{ wallet.id }}">
+                <button type="submit" name="delete_wallet" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+              {% else %}
+              <span class="text-muted small">Wallet must be empty to delete</span>
+              {% endif %}
+            </li>
+          {% empty %}
+            <li class="list-group-item">You have no wallets.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

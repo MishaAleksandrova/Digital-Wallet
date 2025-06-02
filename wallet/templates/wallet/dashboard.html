@@ -3,6 +3,7 @@
 
 {% block content %}
 <h1 class="mb-4">Welcome back, {{ user.first_name|default:user.username }}!</h1>
+
 <form method="get" class="mb-3">
     <label for="wallet">Select Wallet:</label>
     <select name="wallet" id="wallet" class="form-select" onchange="this.form.submit()">
@@ -15,12 +16,13 @@
         </option>
       {% endfor %}
     </select>
-  </form>
-<div class="row gy-4">
-  <!-- Wallet Balance Card -->
-  <div class="col-md-4">
-    <div class="card shadow-sm border-0">
-      <div class="card-body text-center">
+</form>
+
+<div class="row gy-4 mb-4">
+
+  <div class="col-md-6">
+    <div class="card shadow-sm border-0 text-center">
+      <div class="card-body">
         <h5 class="card-title text-muted">Wallet Balance</h5>
         <h2 class="display-4 fw-bold">{{ wallet.balance }} {{ wallet.currency.code|default:"USD" }}</h2>
           {% if converted_balance %}
@@ -28,75 +30,67 @@
               ≈ {{ converted_balance|floatformat:2 }} {{ target_currency_code }}
             </p>
           {% endif %}
-
-          {% if user.is_staff %}
-            <a href="{% url 'add_funds' %}" class="btn btn-primary mt-3 w-100">Add Funds</a>
-          {% endif %}
       </div>
     </div>
   </div>
 
-  <!-- Quick Actions Card -->
-  <div class="col-md-4">
+  <div class="col-md-6">
     <div class="card shadow-sm border-0">
       <div class="card-body">
         <h5 class="card-title mb-3">Quick Actions</h5>
         <div class="d-grid gap-2">
             {% if user.is_staff %}
-              <a href="{% url 'add_funds' %}" class="btn btn-outline-primary">Add Funds</a>
+              <a href="{% url 'add_funds' %}" class="btn-outline-custom-primary">Add Funds</a>
             {% endif %}
-          <a href="{% url 'withdraw_funds' %}" class="btn btn-outline-warning">Withdraw</a>
-          <a href="{% url 'transfer_funds' %}" class="btn btn-outline-success">Transfer</a>
+          <a href="{% url 'withdraw_funds' %}" class="btn-outline-custom-warning">Withdraw</a>
+          <a href="{% url 'transfer_funds' %}" class="btn-outline-custom-success">Transfer</a>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Recent Transactions Card -->
-  <div class="col-md-4">
-    <div class="card shadow-sm border-0" style="max-height: 400px; overflow-y: auto;">
+    <div class="card shadow-sm border-0">
       <div class="card-body">
         <h5 class="card-title mb-3">Recent Transactions</h5>
 
-        <form method="get" class="mb-3">
-          <div class="row g-2 align-items-center">
-            <div class="col-12">
-              <label for="filter_wallet" class="form-label">Filter by Wallet</label>
+        <form method="get" class="row g-2 align-items-center mb-3">
+            <div class="col-md-3">
+              <label for="filter_wallet" class="form-label mb-1">Wallet</label>
               <select name="wallet" id="filter_wallet" class="form-select">
-  <option value="">All Wallets</option>
-  {% for w in wallets %}
-    <option value="{{ w.id }}" {% if w.id == wallet.id %}selected{% endif %}>
-      {{ w.currency.code }} - {{ w.balance }}
-    </option>
-  {% endfor %}
-</select>
+                <option value="">All Wallets</option>
+                  {% for w in wallets %}
+                    <option value="{{ w.id }}" {% if w.id == wallet.id %}selected{% endif %}>
+                      {{ w.currency.code }} - {{ w.balance }}
+                    </option>
+                  {% endfor %}
+                </select>
             </div>
-            <div class="col-5">
-              <select name="type" class="form-select" aria-label="Transaction type filter">
-                <option value="" {% if not selected_type %}selected{% endif %}>All types</option>
-                <option value="ADD" {% if selected_type == "ADD" %}selected{% endif %}>Deposit</option>
-                <option value="WITHDRAW" {% if selected_type == "WITHDRAW" %}selected{% endif %}>Withdraw</option>
-                <option value="TRANSFER" {% if selected_type == "TRANSFER" %}selected{% endif %}>Transfer</option>
-              </select>
+            <div class="col-md-3">
+                <label for="type" class="form-label mb-1">Transaction Type</label>
+                  <select name="type" id="type" class="form-select">
+                    <option value="" {% if not selected_type %}selected{% endif %}>All types</option>
+                    <option value="ADD" {% if selected_type == "ADD" %}selected{% endif %}>Deposit</option>
+                    <option value="WITHDRAW" {% if selected_type == "WITHDRAW" %}selected{% endif %}>Withdraw</option>
+                    <option value="TRANSFER" {% if selected_type == "TRANSFER" %}selected{% endif %}>Transfer</option>
+                  </select>
             </div>
-            <div class="col-3">
-              <input type="date" name="start_date" class="form-control" placeholder="Start Date" value="{{ request.GET.start_date }}">
+            <div class="col-md-3">
+                <label for="start_date" class="form-label mb-1">Start Date</label>
+              <input type="date" name="start_date" class="form-control" value="{{ request.GET.start_date }}">
             </div>
-            <div class="col-3">
-              <input type="date" name="end_date" class="form-control" placeholder="End Date" value="{{ request.GET.end_date }}">
+            <div class="col-md-2">
+                <label class="form-label">End Date</label>
+              <input type="date" name="end_date" class="form-control" value="{{ request.GET.end_date }}">
             </div>
-            <div class="col-1 d-grid">
-              <button type="submit" class="btn btn-primary" title="Filter transactions">
-                <i class="bi bi-funnel-fill"></i> Go
+            <div class="col-12 d-grid mt-2">
+              <button type="submit" class="btn-outline-custom-primary">
+                <i class="bi bi-funnel-fill"></i> Filter
               </button>
             </div>
-          </div>
         </form>
 
-
-
         {% if transactions %}
-          <ul class="list-group list-group-flush">
+          <ul class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
             {% for tx in transactions %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
               <div>
@@ -112,9 +106,12 @@
                 {% else %}
                   ---
                 {% endif %}
+                {% if tx.wallet %}
+                  <div class="text-muted small">Wallet: {{ tx.wallet.currency.code }}</div>
+                {% endif %}
                 <div class="text-muted small">{{ tx.timestamp|date:"M d, Y H:i" }}</div>
               </div>
-              <span class="badge bg-primary rounded-pill">${{ tx.amount }}</span>
+              <span class="badge badge-amount rounded-pill">${{ tx.amount }}</span>
             </li>
             {% endfor %}
           </ul>
@@ -125,5 +122,4 @@
     </div>
   </div>
 
-</div>
 {% endblock %}

@@ -3,10 +3,10 @@
 {% block title %} Verification Failed {% endblock %}
 
 {% block content %}
-<div class="container mt-5 text-center">
+<div class="container text-center">
     <h3>Verification Failed</h3>
     <p class="lead">Sorry, the verification link is invalid or has expired.</p>
-    <a href="{% url 'register' %}" class="btn btn-warning mt-3">Register Again</a>
-    <a href="{% url 'login' %}" class="btn btn-primary mt-3 ms-2">Back to Login</a>
+    <a href="{% url 'register' %}" class="btn-custom-warning">Register Again</a>
+    <a href="{% url 'login' %}" class="btn-custom-primary">Back to Login</a>
 </div>
 {% endblock %}

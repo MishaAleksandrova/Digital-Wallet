@@ -2,36 +2,40 @@
 {% block title %} Transfer Funds {% endblock %}
 
 {% block content %}
-    <h2>Transfer to Another User</h2>
-    <form method="POST" id="transfer-form">
-        {% csrf_token %}
 
-        <label for="sender_wallet">Choose your wallet:</label>
-        <select name="sender_wallet" id="sender_wallet" required>
-            {% for wallet in form.fields.sender_wallet.queryset %}
-                <option value="{{ wallet.id }}" {% if wallet.id|stringformat:"s" == request.POST.sender_wallet %}selected{% endif %}>
-                    {{ wallet.currency.code }} - Balance: {{ wallet.balance }}
-                </option>
-            {% endfor %}
-        </select><br><br>
-
-        <label for="recipient">Recipient Username:</label><br>
-        <input type="text" name="recipient" id="recipient" required><br><br>
-
-        <lable for="recipient_wallet">Recipient Wallet:</lable>
-        <select name="recipient_wallet" id="recipient_wallet" required>
-            <option value="">Select a recipient first</option>
-        </select><br><br>
-
-        <label for="amount">Amount:</label><br>
-        <input type="number" name="amount" step="0.01" required><br><br>
-
-        <label for="note">Note (optional):</label><br>
-        <textarea name="note"></textarea><br><br>
-
-        <button type="submit">Send</button>
-    </form>
-
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-custom-success text-white">
+                <h5>Transfer to Another User</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="transfer-form">
+                    {% csrf_token %}
+                    <label for="sender_wallet">Choose your wallet:</label>
+                    <select name="sender_wallet" id="sender_wallet" required>
+                        {% for wallet in form.fields.sender_wallet.queryset %}
+                            <option value="{{ wallet.id }}" {% if wallet.id|stringformat:"s" == request.POST.sender_wallet %}selected{% endif %}>
+                                {{ wallet.currency.code }} - Balance: {{ wallet.balance }}
+                            </option>
+                        {% endfor %}
+                    </select><br><br>
+                    <label for="recipient">Recipient Username:</label><br>
+                    <input type="text" name="recipient" id="recipient" required><br><br>
+                    <lable for="recipient_wallet">Recipient Wallet:</lable>
+                    <select name="recipient_wallet" id="recipient_wallet" required>
+                        <option value="">Select a recipient first</option>
+                    </select><br><br>
+                    <label for="amount">Amount:</label><br>
+                    <input type="number" name="amount" step="0.01" required><br><br>
+                    <label for="note">Note (optional):</label><br>
+                    <textarea name="note"></textarea><br><br>
+                    <button type="submit" class="btn-outline-custom-success">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     const recipientInput = document.getElementById("recipient");
     const recipientWalletSelect = document.getElementById("recipient_wallet");

@@ -1,7 +1,160 @@
 body {
   background-color: #f5f7fa;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
 }
+
+.dashboard-wrapper {
+    position: relative;
+    min-height: 100vh;
+    z-index: 1;
+}
+
+.dashboard-wrapper::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("/static/wallet/images/dashboard-bg.jpg") no-repeat center center fixed;
+    background-size: cover;
+    opacity: 0.5;
+    z-index: -1;
+    overflow-x: hidden;
+}
+
+.navbar {
+    background-color: #88b1d2;
+}
+
+.navbar .navbar-brand {
+    color: #fff;
+    font-weight: 700;
+}
+
+.navbar .nav-link {
+    color: #f0f6ff;
+    font-weight: 600;
+}
+
+.navbar .nav-link:hover {
+    color: #e1f0ff;
+    text-decoration: underline;
+}
+
+#navmenu {
+    margin-top: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: #467fb3;
+}
+
+.btn-custom-primary {
+    background-color: #467fb3;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.375rem 0.75rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn-custom-primary:hover{
+    background-color: #357abd;
+    color: white;
+}
+
+.btn-custom-success {
+    background-color: #5ea981;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.375rem 0.75rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn-custom-warning {
+  background-color: #f0ad4e;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  transition: background-color 0.3s ease;
+}
+
+.btn-custom-warning:hover {
+  background-color: #ec971f;
+  color: white;
+}
+
+.btn-outline-custom-primary {
+  color: #88b1d2; /* text color */
+  border: 2px solid #88b1d2; /* border color */
+  background-color: transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  text-align: center; /* center text */
+  display: inline-block; /* so padding and width work nicely */
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-outline-custom-primary:hover,
+.btn-outline-custom:focus {
+  background-color: #88b1d2; /* fill with color on hover */
+  color: white;
+  text-decoration: none;
+  outline: none;
+}
+
+.btn-outline-custom-warning {
+  color: #c69c49; /* text color */
+  border: 2px solid #c69c49; /* border color */
+  background-color: transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  text-align: center; /* center text */
+  display: inline-block; /* so padding and width work nicely */
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-outline-custom-warning:hover,
+.btn-outline-custom:focus {
+  background-color: #c69c49; /* fill with color on hover */
+  color: white;
+  text-decoration: none;
+  outline: none;
+}
+
+.btn-outline-custom-success {
+  color: #5ea981; /* text color */
+  border: 2px solid #5ea981; /* border color */
+  background-color: transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  text-align: center; /* center text */
+  display: inline-block; /* so padding and width work nicely */
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-outline-custom-success:hover,
+.btn-outline-custom:focus {
+  background-color: #5ea981; /* fill with color on hover */
+  color: white;
+  text-decoration: none;
+  outline: none;
+}
+
 
 .card {
   border-radius: 12px;
@@ -12,26 +165,31 @@ body {
   color: #495057;
 }
 
-.btn-outline-primary {
-  border-radius: 8px;
-  font-weight: 600;
-}
-
-.btn-outline-warning {
-  border-radius: 8px;
-  font-weight: 600;
-}
-
-.btn-outline-success {
-  border-radius: 8px;
-  font-weight: 600;
-}
-
 .form-text {
-  color: #6c757d; /* Bootstrap default muted */
+  color: #6c757d;
   font-size: 0.65rem;
   margin-top: 0.25rem;
 }
 
+.badge-amount {
+  background-color: #88b1d2;
+  color: #fff;
+  font-weight: 500;
+}
 
+
+.bg-custom-success {
+  background-color: #5ea981 !important;
+  color: white;
+}
+
+.bg-custom-warning {
+  background-color: #c69c49 !important;
+  color: white;
+}
+
+.bg-custom-primary {
+  background-color: #88b1d2 !important;
+  color: white;
+}
 

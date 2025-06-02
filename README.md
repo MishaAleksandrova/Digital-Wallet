@@ -107,6 +107,11 @@ Easily monitor wallet balances and transaction history with a focused view by wa
 
 ![Dashboard Screenshot](screenshots/dashboard.png)
 
+### ➕ Add Funds (Admin Only)  
+Admins can add funds to any user's wallet using a dynamic wallet selector with AJAX.  
+
+![Add Funds Screenshot](screenshots/add_funds.png)
+
 ### 💸 Withdraw Funds  
 Select the wallet to withdraw from and enter the amount with balance validation.
 
@@ -120,9 +125,16 @@ Send money to another user’s wallet — with automatic currency conversion whe
 ### ⚙️ Account Settings  
 Update your email and phone number with real-time validation and clean form design.
 
-
 ![Account Settings Screenshot](screenshots/account_settings.png)
 
+### 🔐 Login  
+Secure and simple login form with validation and error handling.  
 
+![Login Screenshot](screenshots/login.png)
+
+### 📝 Register  
+New users can sign up using a clean, validated registration form.  
+
+![Register Screenshot](screenshots/register.png)
 
 
