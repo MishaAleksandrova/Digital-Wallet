@@ -1,5 +1,4 @@
 from decimal import Decimal
-import requests
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse
@@ -112,7 +111,7 @@ def verify_email_view(request):
             return redirect('wallet_dashboard')
         except User.DoesNotExist:
             return render(request, 'wallet/verify_failed.html')
-    return render(request, 'verify_failed.html')
+    return render(request, 'wallet/verify_failed.html')
 
 
 @require_GET

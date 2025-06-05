@@ -53,6 +53,41 @@ A web-based digital wallet application built with Django and styled using Bootst
 • Update email and phone with current values shown  
 • Clean design with validations 
 
+## 🧪 Tests Coverage
+### Register View:
+
+- POST valid data and assert user is created inactive
+
+- Ensure verification email is sent
+
+- Assert wallet creation for new users
+
+### Verify Email View:
+
+- Simulate valid token and assert user activation
+
+- Simulate invalid token and assert failure message
+
+### 💸 Wallet Management
+
+#### Add Funds (admin-only):
+
+- POST valid data: wallet balance increases and transaction is logged
+
+- POST invalid user or wallet: error is raised
+
+#### Transfer Funds:
+
+- Transfer within same currency adjusts balances and logs transaction
+
+- Transfer between different currencies applies conversion rate correctly
+
+- Invalid recipient triggers error
+
+- Insufficient funds triggers error
+
+
+
 ## 📅 Future Features
 
 - [ ] Admin Panel Improvements (bulk actions, analytics)
