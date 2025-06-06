@@ -86,6 +86,36 @@ A web-based digital wallet application built with Django and styled using Bootst
 
 - Insufficient funds triggers error
 
+#### Withdraw Funds:
+
+- Valid withdrawal → assert balance decreases and transaction exists.
+
+- Insufficient funds → assert error message.
+
+### 📊 Dashboard View
+
+- Test filtering by transaction type, date range, and wallet.
+
+- Ensure correct transactions show for regular vs. admin users.
+
+### ⚙️ Account Settings
+#### Add Wallet:
+
+- Add a new currency wallet → assert created.
+
+- Try duplicate → assert error.
+
+#### Delete Wallet:
+
+- Delete wallet with zero balance → assert deleted.
+
+- Delete wallet with balance → assert error.
+
+#### Edit Profile:
+
+- POST valid profile data → assert changes saved.
+
+- POST invalid profile data → assert error.
 
 
 ## 📅 Future Features
